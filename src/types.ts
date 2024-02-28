@@ -7,6 +7,8 @@ export type PointDrawOptions = {
   fillPoint?: boolean;
 } & Partial<CTXAttributes>;
 export type SegmentDrawOptions = { width?: number } & Partial<CTXAttributes>;
+export type PolygonDrawOptions = { width?: number } & Partial<CTXAttributes>;
+export type EnvelopeDrawOptions = Partial<CTXAttributes>;
 
 export type TPoint = { x: number; y: number };
 
