@@ -1,4 +1,4 @@
-import type { PointDrawOptions } from "@/types";
+import type { PointDrawOptions, TPoint } from "@/types";
 
 class Point {
   x: number;
@@ -8,7 +8,7 @@ class Point {
     this.y = y;
   }
 
-  equals(point: Point) {
+  equals(point: Point | TPoint) {
     return this.x === point.x && this.y === point.y;
   }
 
