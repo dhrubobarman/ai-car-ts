@@ -12,11 +12,23 @@ export const controls = createElement("div", {
 const buttonStyle =
   "select-none rounded-md py-[10px] px-6 text-center align-middle font-sans text-xs font-bold uppercase  shadow-md shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.6] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none";
 
-export const addRandomPointButton = createElement(
+const iconButtonStyle =
+  "select-none rounded-md py-[10px] px-[10px] text-center align-middle font-sans text-xs font-bold uppercase  shadow-md shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.6] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none";
+
+export const saveButton = createElement(
   "button",
   {
-    className: `bg-blue-900 text-white ${buttonStyle}`,
-    innerText: "Add Point",
+    className: `bg-gray-900 text-white ${iconButtonStyle}`,
+    innerText: "💾",
+  },
+  controls
+);
+
+export const disposeButton = createElement(
+  "button",
+  {
+    className: `bg-gray-900 text-white ${iconButtonStyle}`,
+    innerText: "🗑️",
   },
   controls
 );

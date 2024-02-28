@@ -2,6 +2,7 @@ import Graph from "@/math/graph";
 import { getNearestPoint } from "./math/utils";
 import Point from "./primitives/point";
 import Segment from "./primitives/segment";
+import Viewport from "@/Viewport";
 
 export class GraphEditor {
   ctx: CanvasRenderingContext2D;
@@ -12,9 +13,11 @@ export class GraphEditor {
   intent: Segment | null;
   dragging: boolean;
   mouse: Point;
-  constructor(canvas: HTMLCanvasElement, graph: Graph) {
-    this.ctx = canvas.getContext("2d")!;
-    this.canvas = canvas;
+  viewport: Viewport;
+  constructor(viewport: Viewport, graph: Graph) {
+    this.viewport = viewport;
+    this.canvas = viewport.canvas;
+    this.ctx = this.canvas.getContext("2d")!;
     this.graph = graph;
     this.selected = null;
     this.hovered = null;
@@ -33,8 +36,12 @@ export class GraphEditor {
   }
 
   private handleMouseMove(e: MouseEvent) {
-    this.mouse = new Point(e.offsetX, e.offsetY);
-    this.hovered = getNearestPoint(this.mouse, this.graph.points, 10);
+    this.mouse = this.viewport.getMouse(e, true);
+    this.hovered = getNearestPoint(
+      this.mouse,
+      this.graph.points,
+      10 * this.viewport.zoom
+    );
     if (this.dragging) {
       this.selected!.x = this.mouse.x;
       this.selected!.y = this.mouse.y;
@@ -75,6 +82,12 @@ export class GraphEditor {
     if (this.selected === point) {
       this.selected = null;
     }
+  }
+
+  dispose() {
+    this.graph.dispose();
+    this.selected = null;
+    this.hovered = null;
   }
 
   display() {

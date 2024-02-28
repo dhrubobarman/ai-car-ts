@@ -1,12 +1,29 @@
 import Point from "@/primitives/point";
 import Segment from "@/primitives/segment";
+import type { GraphInfo } from "@/types";
 
 class Graph {
   points: Point[];
   segments: Segment[];
-  constructor(points: Point[], segments: Segment[]) {
-    this.points = points;
+  constructor(points?: Point[], segments?: Segment[]) {
+    this.points = points || [];
     this.segments = segments || [];
+  }
+
+  static load(info: GraphInfo) {
+    const points = [];
+    const segments = [];
+    for (const point of info.points) {
+      points.push(new Point(point.x, point.y));
+    }
+    for (const segment of info.segments) {
+      const p1 = points.find((p) => p.equals(segment.p1));
+      const p2 = points.find((p) => p.equals(segment.p2));
+      if (p1 && p2) {
+        segments.push(new Segment(p1, p2));
+      }
+    }
+    return new Graph(points, segments);
   }
 
   addPoint(point: Point) {
