@@ -11,7 +11,7 @@ export class Stop extends Marking {
     width: number,
     height: number
   ) {
-    super(center, directionVector, width, height);
+    super(center, directionVector, width, height, "Stop");
     this.border = this.poly.segments[2];
   }
 

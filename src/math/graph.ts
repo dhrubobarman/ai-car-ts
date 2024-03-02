@@ -14,7 +14,7 @@ class Graph {
     const points = [];
     const segments = [];
     for (const point of info.points) {
-      points.push(new Point(point.x, point.y));
+      points.push(Point.load(point));
     }
     for (const segment of info.segments) {
       const p1 = points.find((p) => p.equals(segment.p1));

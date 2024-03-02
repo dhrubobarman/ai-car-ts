@@ -1,3 +1,4 @@
+import { load } from ".";
 import { createElement } from "./createElement";
 
 export const canvas = createElement("canvas", {
@@ -22,6 +23,25 @@ export const saveButton = createElement(
     innerText: "💾",
   },
   controls
+);
+
+export const fileInputLabel = createElement(
+  "label",
+  {
+    className: `bg-gray-900 text-white ${iconButtonStyle} cursor-pointer`,
+    innerText: "📂",
+  },
+  controls
+);
+export const fileInput = createElement(
+  "input",
+  {
+    type: "file",
+    className: "sr-only",
+    accept: ".world",
+    onchange: load,
+  },
+  fileInputLabel
 );
 
 export const disposeButton = createElement(

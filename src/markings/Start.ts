@@ -10,7 +10,7 @@ export class Start extends Marking {
     width: number,
     height: number
   ) {
-    super(center, directionVector, width, height);
+    super(center, directionVector, width, height, "Start");
     this.image = new Image();
     this.image.src = "./assets/car.png";
   }

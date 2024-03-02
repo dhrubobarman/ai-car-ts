@@ -1,6 +1,7 @@
 import { average, getFake3dPoint } from "@/math/utils";
 import Polygon from "@/primitives/Polygon";
 import Point from "@/primitives/point";
+import { InfoBuilding } from "@/types";
 
 class Building {
   base: Polygon;
@@ -8,6 +9,9 @@ class Building {
   constructor(poly: Polygon, height = 200) {
     this.base = poly;
     this.height = height;
+  }
+  static load(info: InfoBuilding) {
+    return new Building(Polygon.load(info.base), info.height);
   }
   draw(ctx: CanvasRenderingContext2D, viewpoint: Point) {
     const topPoints = this.base.points.map((p: Point) => {

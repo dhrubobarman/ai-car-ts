@@ -1,31 +1,32 @@
 import Graph from "@/math/graph";
 import {
   canvas,
-  disposeButton,
-  saveButton,
-  graphButton,
-  stopButton,
   crossingButton,
-  startButton,
-  parkingBtn,
+  disposeButton,
+  graphButton,
   lightBtn,
+  parkingBtn,
+  saveButton,
+  startButton,
+  stopButton,
   targetBtn,
   yieldBtn,
-} from "@/utils/helperElements";
-import { GraphEditor } from "./editors/GraphEditor";
+} from "@/utils";
 import Viewport from "./Viewport";
 import World from "./World";
-import "./style.scss";
-import "./utils/helperElements";
-import { scale } from "./math/utils";
-import { StopEditor } from "./editors/StopEditor";
 import { CrossingEditor } from "./editors/CrossingEditor";
-import { StartEditor } from "./editors/StartEditor";
-import { Modes } from "./types";
-import { ParkingEditor } from "./editors/ParkingEditor";
+import { GraphEditor } from "./editors/GraphEditor";
 import { LightEditor } from "./editors/LightEditor";
+import { ParkingEditor } from "./editors/ParkingEditor";
+import { StartEditor } from "./editors/StartEditor";
+import { StopEditor } from "./editors/StopEditor";
 import { TargetEditor } from "./editors/TargetEditor";
 import { YieldEditor } from "./editors/YieldEditor";
+import { scale } from "./math/utils";
+import "./style.scss";
+import { Modes } from "./types";
+import { save } from "./utils";
+import "./utils/helperElements";
 
 canvas.width = 600;
 canvas.height = 600;
@@ -33,18 +34,22 @@ function dispose() {
   tools["graph"].editor.dispose();
   world.markings.length = 0;
 }
-function save() {
-  localStorage.setItem("graph", JSON.stringify(graph));
-}
+// function save() {
+//   localStorage.setItem("world", JSON.stringify(world));
+// }
 disposeButton.addEventListener("click", dispose);
-saveButton.addEventListener("click", save);
+saveButton.addEventListener("click", () =>
+  save(world, viewport.zoom, viewport.offset)
+);
 const ctx = canvas.getContext("2d")!;
 
-const graphString = localStorage.getItem("graph");
-const graphInfo = graphString ? JSON.parse(graphString) : null;
-const graph = graphInfo ? Graph.load(graphInfo) : new Graph();
-const world = new World(graph);
-const viewport = new Viewport(canvas);
+const worldString = localStorage.getItem("world");
+
+const worldInfo = worldString ? JSON.parse(worldString) : null;
+const world: World = worldInfo ? World.load(worldInfo) : new World(new Graph());
+const viewport = new Viewport(canvas, world.zoom, world.offset);
+
+const graph = world.graph;
 
 const tools = {
   graph: { button: graphButton, editor: new GraphEditor(viewport, graph) },

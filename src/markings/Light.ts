@@ -6,8 +6,13 @@ import { Marking } from "./Marking";
 export class Light extends Marking {
   border: Segment;
   state: "green" | "red" | "yellow" | "off";
-  constructor(center: Point, directionVector: Point, width: number) {
-    super(center, directionVector, width, 18);
+  constructor(
+    center: Point,
+    directionVector: Point,
+    width: number,
+    height: number
+  ) {
+    super(center, directionVector, width, 18, "Light");
     this.border = this.poly.segments[0];
     this.state = "green";
   }

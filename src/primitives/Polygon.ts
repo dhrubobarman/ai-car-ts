@@ -1,5 +1,5 @@
 import { average, getIntersection, getRandomColor } from "@/math/utils";
-import type { PolygonDrawOptions } from "@/types";
+import type { InfoPoly, PolygonDrawOptions } from "@/types";
 import Point from "./point";
 import Segment from "./segment";
 
@@ -12,6 +12,10 @@ class Polygon {
     for (let i = 1; i <= points.length; i++) {
       this.segments.push(new Segment(points[i - 1], points[i % points.length]));
     }
+  }
+
+  static load(info: InfoPoly) {
+    return new Polygon(info.points.map((p) => Point.load(p)));
   }
 
   static union(polys: Polygon[]) {

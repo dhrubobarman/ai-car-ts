@@ -11,7 +11,7 @@ export class Crossing extends Marking {
     width: number,
     height: number
   ) {
-    super(center, directionVector, width, height);
+    super(center, directionVector, width, height, "Crossing");
     this.borders = [this.poly.segments[0], this.poly.segments[2]];
   }
 

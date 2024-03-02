@@ -8,7 +8,7 @@ export class Target extends Marking {
     width: number,
     height: number
   ) {
-    super(center, directionVector, width, height);
+    super(center, directionVector, width, height, "Target");
   }
 
   draw(ctx: CanvasRenderingContext2D) {

@@ -11,7 +11,7 @@ export class Yield extends Marking {
     width: number,
     height: number
   ) {
-    super(center, directionVector, width, height);
+    super(center, directionVector, width, height, "Yield");
     this.border = this.poly.segments[2];
   }
 

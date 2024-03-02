@@ -1,14 +1,26 @@
 import { angle, subtract, translate } from "@/math/utils";
 import Polygon from "./Polygon";
 import Segment from "./segment";
-import { EnvelopeDrawOptions } from "@/types";
+import { EnvelopeDrawOptions, InfoEnvelope } from "@/types";
+import Point from "./point";
 
 class Envelope {
-  skeleton: Segment;
-  poly: Polygon;
-  constructor(skeleton: Segment, width: number, roundness = 1) {
-    this.skeleton = skeleton;
-    this.poly = this.generatePolygon(width, roundness);
+  skeleton!: Segment;
+  poly!: Polygon;
+  constructor(skeleton?: Segment, width?: number, roundness = 1) {
+    if (skeleton && width) {
+      this.skeleton = skeleton;
+      this.poly = this.generatePolygon(width, roundness);
+    }
+  }
+  static load(info: InfoEnvelope) {
+    const env = new Envelope();
+    env.skeleton = new Segment(
+      new Point(info.skeleton.p1.x, info.skeleton.p1.y),
+      new Point(info.skeleton.p2.x, info.skeleton.p2.y)
+    );
+    env.poly = Polygon.load(info.poly);
+    return env;
   }
   private generatePolygon(width: number, roundness: number) {
     const { p1, p2 } = this.skeleton;
