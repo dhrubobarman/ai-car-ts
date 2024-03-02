@@ -55,6 +55,7 @@ class Segment {
       dash = [],
       ...rest
     } = options || {};
+    ctx.save();
     ctx.beginPath();
     ctx.lineWidth = width;
     ctx.strokeStyle = strokeStyle;
@@ -62,12 +63,11 @@ class Segment {
     ctx.lineTo(this.p2.x, this.p2.y);
     ctx.setLineDash(dash);
     if (rest) {
-      ctx.save();
       Object.assign(ctx, rest);
-      ctx.restore();
     }
     ctx.stroke();
     ctx.setLineDash([]);
+    ctx.restore();
   }
 }
 

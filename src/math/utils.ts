@@ -1,4 +1,5 @@
 import Point from "@/primitives/point";
+import Segment from "@/primitives/segment";
 
 export function getNearestPoint(
   loc: Point,
@@ -6,15 +7,31 @@ export function getNearestPoint(
   threshold = Number.MAX_SAFE_INTEGER
 ) {
   let minDist = Number.MAX_SAFE_INTEGER;
-  let nearestPoint = null;
+  let nearest = null;
   for (const point of points) {
     const dist = distance(point, loc);
     if (dist < minDist && dist < threshold) {
       minDist = dist;
-      nearestPoint = point;
+      nearest = point;
     }
   }
-  return nearestPoint;
+  return nearest;
+}
+export function getNearestSegment(
+  loc: Point,
+  segments: Segment[],
+  threshold = Number.MAX_SAFE_INTEGER
+) {
+  let minDist = Number.MAX_SAFE_INTEGER;
+  let nearest = null;
+  for (const seg of segments) {
+    const dist = seg.distanceToPoint(loc);
+    if (dist < minDist && dist < threshold) {
+      minDist = dist;
+      nearest = seg;
+    }
+  }
+  return nearest;
 }
 
 export function distance(p1: Point, p2: Point) {
@@ -47,6 +64,10 @@ export function translate(loc: Point, angle: number, offset: number) {
     loc.y + Math.sin(angle) * offset
   );
 }
+
+export function perpendicular(point: Point) {
+  return new Point(-point.y, point.x);
+}
 export function angle(p: Point) {
   return Math.atan2(p.y, p.x);
 }
@@ -74,9 +95,19 @@ export function getIntersection(A: Point, B: Point, C: Point, D: Point) {
 export function lerp(a: number, b: number, t: number) {
   return a + (b - a) * t;
 }
+export function lerp2D(a: Point, b: Point, t: number) {
+  return new Point(lerp(a.x, b.x, t), lerp(a.y, b.y, t));
+}
 
 // if you're following along, this comes in a few minutes ;-)
 export function getRandomColor() {
   const hue = 290 + Math.random() * 260;
   return "hsl(" + hue + ", 100%, 60%)";
+}
+
+export function getFake3dPoint(point: Point, viewpoint: Point, height: number) {
+  const dir = normalize(subtract(point, viewpoint));
+  const dist = distance(point, viewpoint);
+  const scaler = Math.atan(dist / 300) / (Math.PI / 2);
+  return add(point, scale(dir, height * scaler));
 }
