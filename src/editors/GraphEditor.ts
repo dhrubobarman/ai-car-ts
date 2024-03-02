@@ -1,7 +1,7 @@
 import Graph from "@/math/graph";
-import { getNearestPoint } from "./math/utils";
-import Point from "./primitives/point";
-import Segment from "./primitives/segment";
+import { getNearestPoint } from "../math/utils";
+import Point from "../primitives/point";
+import Segment from "../primitives/segment";
 import Viewport from "@/Viewport";
 
 export class GraphEditor {
@@ -14,6 +14,10 @@ export class GraphEditor {
   dragging: boolean;
   mouse: Point;
   viewport: Viewport;
+  boundMouseDown!: (e: MouseEvent) => void;
+  boundMouseMove!: (e: MouseEvent) => void;
+  boundContextMenu!: (e: MouseEvent) => void;
+  boundMouseUp!: () => void;
   constructor(viewport: Viewport, graph: Graph) {
     this.viewport = viewport;
     this.canvas = viewport.canvas;
@@ -24,15 +28,32 @@ export class GraphEditor {
     this.intent = null;
     this.dragging = false;
     this.mouse = new Point(0, 0);
+  }
+  enable() {
     this.addEventListeaners();
   }
+  disable() {
+    this.removeEventListeaners();
+    this.selected = null;
+    this.hovered = null;
+  }
   private addEventListeaners() {
-    this.canvas.addEventListener("mousedown", this.handleMouseDown.bind(this));
-    this.canvas.addEventListener("mousemove", this.handleMouseMove.bind(this));
-    this.canvas.addEventListener("contextmenu", (e) => e.preventDefault());
-    this.canvas.addEventListener("mouseup", () => {
+    this.boundMouseDown = this.handleMouseDown.bind(this);
+    this.boundMouseMove = this.handleMouseMove.bind(this);
+    this.boundContextMenu = (e: MouseEvent) => e.preventDefault();
+    this.boundMouseUp = () => {
       this.dragging = false;
-    });
+    };
+    this.canvas.addEventListener("mousedown", this.boundMouseDown);
+    this.canvas.addEventListener("mousemove", this.boundMouseMove);
+    this.canvas.addEventListener("contextmenu", this.boundContextMenu);
+    this.canvas.addEventListener("mouseup", this.boundMouseUp);
+  }
+  private removeEventListeaners() {
+    this.canvas.removeEventListener("mousedown", this.boundMouseDown);
+    this.canvas.removeEventListener("mousemove", this.boundMouseMove);
+    this.canvas.removeEventListener("contextmenu", this.boundContextMenu);
+    this.canvas.removeEventListener("mouseup", this.boundMouseUp);
   }
 
   private handleMouseMove(e: MouseEvent) {

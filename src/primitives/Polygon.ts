@@ -1,10 +1,10 @@
-import type { PolygonDrawOptions, TPoint } from "@/types";
+import { average, getIntersection, getRandomColor } from "@/math/utils";
+import type { PolygonDrawOptions } from "@/types";
 import Point from "./point";
 import Segment from "./segment";
-import { average, getIntersection, getRandomColor } from "@/math/utils";
 
 class Polygon {
-  points: Point[] | TPoint[];
+  points: Point[];
   segments: Segment[];
   constructor(points: Point[]) {
     this.points = points;

@@ -1,13 +1,21 @@
+import Tree from "@/items/Tree";
 import Graph from "./math/graph";
-import { add, distance, lerp, scale } from "./math/utils";
+import { add, distance, getNearestPoint, lerp, scale } from "./math/utils";
 import Envelope from "./primitives/Envelope";
 import Polygon from "./primitives/Polygon";
 import Point from "./primitives/point";
 import Segment from "./primitives/segment";
+import Building from "./items/Building";
+import { Markings } from "./types";
+import { Light } from "./markings/Light";
 
+export type ControlCenter = Point & {
+  lights?: Light[];
+  ticks?: number;
+};
 class World {
   graph: Graph;
-  rodeWidth: number;
+  roadWidth: number;
   roadRoundness: number;
   envelopes: Envelope[];
   intersections: Point[];
@@ -15,9 +23,12 @@ class World {
   buildingWidth: number;
   buildingMinLength: number;
   spacing: number;
-  buildings: Polygon[];
-  trees: Point[];
+  buildings: Building[];
+  trees: Tree[];
   treeSize: number;
+  laneGuides: Segment[];
+  markings: Markings[];
+  frameCount: number;
   constructor(
     graph: Graph,
     rodeWidth = 100,
@@ -28,7 +39,7 @@ class World {
     treeSize = 160
   ) {
     this.graph = graph;
-    this.rodeWidth = rodeWidth;
+    this.roadWidth = rodeWidth;
     this.roadRoundness = roadRoundness;
     this.intersections = [];
     this.envelopes = [];
@@ -39,22 +50,37 @@ class World {
     this.treeSize = treeSize;
     this.buildings = [];
     this.trees = [];
+    this.laneGuides = [];
+    this.frameCount = 0;
+    this.markings = [];
     this.generate();
   }
   generate() {
     this.envelopes.length = 0;
     for (const seg of this.graph.segments) {
-      const env = new Envelope(seg, this.rodeWidth, this.roadRoundness);
+      const env = new Envelope(seg, this.roadWidth, this.roadRoundness);
       this.envelopes.push(env);
     }
     this.roadBorder = Polygon.union(this.envelopes.map((e) => e.poly));
     this.buildings = this.generateBuildings();
     this.trees = this.generateTrees();
+    this.laneGuides = this.generateLaneGuides();
+  }
+
+  private generateLaneGuides() {
+    const tempEnvelope: Envelope[] = [];
+    for (const seg of this.graph.segments) {
+      tempEnvelope.push(
+        new Envelope(seg, this.roadWidth / 2, this.roadRoundness)
+      );
+    }
+    const segments = Polygon.union(tempEnvelope.map((e) => e.poly));
+    return segments;
   }
   private generateTrees() {
     const points = [
       ...this.roadBorder.map((s) => [s.p1, s.p2]).flat(),
-      ...this.buildings.map((p) => p.points).flat(),
+      ...this.buildings.map((b) => b.base.points).flat(),
     ];
     const left = Math.min(...points.map((p) => p.x));
     const right = Math.max(...points.map((p) => p.x));
@@ -62,7 +88,7 @@ class World {
     const bottom = Math.max(...points.map((p) => p.y));
 
     const illigalPolys = [
-      ...this.buildings,
+      ...this.buildings.map((b) => b.base),
       ...this.envelopes.map((e) => e.poly),
     ];
 
@@ -87,7 +113,7 @@ class World {
       // If the point is too close to another tree, don't add it.
       if (keep) {
         for (const t of trees) {
-          if (distance(t, p) < this.treeSize) {
+          if (distance(t.center, p) < this.treeSize) {
             keep = false;
             break;
           }
@@ -105,7 +131,7 @@ class World {
         keep = closeToSomething;
       }
       if (keep) {
-        trees.push(p);
+        trees.push(new Tree(p, this.treeSize));
         tryCount = 0;
       }
       tryCount++;
@@ -120,7 +146,7 @@ class World {
       tempEnvelope.push(
         new Envelope(
           seg,
-          this.rodeWidth + this.buildingWidth + this.spacing * 2,
+          this.roadWidth + this.buildingWidth + this.spacing * 2,
           this.roadRoundness
         )
       );
@@ -168,11 +194,73 @@ class World {
         }
       }
     }
-    return bases;
+    return bases.map((b) => new Building(b));
   }
-  draw(ctx: CanvasRenderingContext2D) {
+  private getIntersections() {
+    const subset = [];
+    for (const point of this.graph.points) {
+      let degree = 0;
+      for (const seg of this.graph.segments) {
+        if (seg.includes(point)) {
+          degree++;
+        }
+      }
+
+      if (degree > 2) {
+        subset.push(point);
+      }
+    }
+    return subset;
+  }
+  private updateLights() {
+    const lights = this.markings.filter((m) => m instanceof Light);
+    const controlCenters: any[] = [];
+    for (const light of lights) {
+      const point = getNearestPoint(
+        light.center,
+        this.getIntersections()
+      ) as Point;
+      let controlCenter: any = controlCenters.find((c) => c.equals(point));
+      if (!controlCenter) {
+        controlCenter = new Point(point.x, point.y);
+        controlCenter.lights = [light];
+        controlCenters.push(controlCenter);
+      } else {
+        controlCenter.lights.push(light);
+      }
+    }
+    const greenDuration = 2,
+      yellowDuration = 1;
+    for (const center of controlCenters) {
+      center.ticks = center?.lights?.length * (greenDuration + yellowDuration);
+    }
+    const tick = Math.floor(this.frameCount / 60);
+    for (const center of controlCenters) {
+      const cTick = tick % center.ticks;
+      const greenYellowIndex = Math.floor(
+        cTick / (greenDuration + yellowDuration)
+      );
+      const greenYellowState =
+        cTick % (greenDuration + yellowDuration) < greenDuration
+          ? "green"
+          : "yellow";
+      for (let i = 0; i < center.lights.length; i++) {
+        if (i == greenYellowIndex) {
+          center.lights[i].state = greenYellowState;
+        } else {
+          center.lights[i].state = "red";
+        }
+      }
+    }
+    this.frameCount++;
+  }
+  draw(ctx: CanvasRenderingContext2D, viewpoint: Point) {
+    this.updateLights();
     for (const env of this.envelopes) {
       env.draw(ctx, { fillStyle: "#BBB", strokeStyle: "#BBB", lineWidth: 15 });
+    }
+    for (const markings of this.markings) {
+      markings.draw(ctx);
     }
     for (const seg of this.graph.segments) {
       seg.draw(ctx, { strokeStyle: "white", width: 4, dash: [10, 10] });
@@ -180,14 +268,13 @@ class World {
     for (const seg of this.roadBorder) {
       seg.draw(ctx, { strokeStyle: "white", width: 4 });
     }
-    for (const tree of this.trees) {
-      tree.draw(ctx, {
-        fillStyle: "rgba(0,255,0,0.5)",
-        size: this.treeSize,
-      });
-    }
-    for (const building of this.buildings) {
-      building.draw(ctx, {});
+    const items = [...this.buildings, ...this.trees];
+    items.sort(
+      (a, b) =>
+        b.base.distanceToPoint(viewpoint) - a.base.distanceToPoint(viewpoint)
+    );
+    for (const item of items) {
+      item.draw(ctx, viewpoint);
     }
   }
 }
