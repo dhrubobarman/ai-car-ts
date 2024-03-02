@@ -1,13 +1,14 @@
 import Tree from "@/items/Tree";
+import Building from "./items/Building";
+import { Light } from "./markings/Light";
 import Graph from "./math/graph";
 import { add, distance, getNearestPoint, lerp, scale } from "./math/utils";
 import Envelope from "./primitives/Envelope";
 import Polygon from "./primitives/Polygon";
 import Point from "./primitives/point";
 import Segment from "./primitives/segment";
-import Building from "./items/Building";
-import { Markings } from "./types";
-import { Light } from "./markings/Light";
+import { InfoWorld, Markings } from "./types";
+import { loadMarkings } from "./utils";
 
 export type ControlCenter = Point & {
   lights?: Light[];
@@ -29,6 +30,8 @@ class World {
   laneGuides: Segment[];
   markings: Markings[];
   frameCount: number;
+  zoom: number;
+  offset: Point | null;
   constructor(
     graph: Graph,
     rodeWidth = 100,
@@ -36,25 +39,55 @@ class World {
     buildingWidth = 150,
     buildingMinLength = 150,
     spacing = 50,
-    treeSize = 160
+    treeSize = 160,
+    zoom = 1,
+    offset = null
   ) {
     this.graph = graph;
     this.roadWidth = rodeWidth;
     this.roadRoundness = roadRoundness;
-    this.intersections = [];
-    this.envelopes = [];
-    this.roadBorder = [];
     this.buildingWidth = buildingWidth;
     this.buildingMinLength = buildingMinLength;
     this.spacing = spacing;
     this.treeSize = treeSize;
+    this.intersections = [];
+    this.envelopes = [];
+    this.roadBorder = [];
     this.buildings = [];
     this.trees = [];
     this.laneGuides = [];
     this.frameCount = 0;
     this.markings = [];
     this.generate();
+    this.zoom = zoom;
+    this.offset = offset;
   }
+  static load(info: InfoWorld) {
+    const world = new World(new Graph());
+    world.graph = Graph.load(info.graph);
+    world.roadWidth = info.roadWidth;
+    world.roadRoundness = info.roadRoundness;
+    world.buildingWidth = info.buildingWidth;
+    world.buildingMinLength = info.buildingMinLength;
+    world.spacing = info.spacing;
+    world.treeSize = info.treeSize;
+    world.zoom = info.zoom;
+    world.offset = info.offset ? Point.load(info.offset) : null;
+    world.envelopes = info.envelopes.map((e) => Envelope.load(e));
+    world.roadBorder = info.roadBorder.map(
+      (s) => new Segment(Point.load(s.p1), Point.load(s.p2))
+    );
+    world.buildings = info.buildings.map((b) => Building.load(b));
+    world.trees = info.trees.map(
+      (t) => new Tree(Point.load(t.center), info.treeSize)
+    );
+    world.laneGuides = info.laneGuides.map(
+      (l) => new Segment(Point.load(l.p1), Point.load(l.p2))
+    );
+    world.markings = loadMarkings(info.markings);
+    return world;
+  }
+
   generate() {
     this.envelopes.length = 0;
     for (const seg of this.graph.segments) {

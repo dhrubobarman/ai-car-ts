@@ -1,4 +1,4 @@
-import type { SegmentDrawOptions } from "@/types";
+import type { InfoSegment, SegmentDrawOptions } from "@/types";
 import Point from "@/primitives/point";
 import {
   add,
@@ -15,6 +15,9 @@ class Segment {
   constructor(p1: Point, p2: Point) {
     this.p1 = p1;
     this.p2 = p2;
+  }
+  static load(info: InfoSegment) {
+    return new Segment(Point.load(info.p1), Point.load(info.p2));
   }
   length() {
     return distance(this.p1, this.p2);

@@ -1,4 +1,4 @@
-import type { PointDrawOptions, TPoint } from "@/types";
+import type { InfoPoint, PointDrawOptions, TPoint } from "@/types";
 
 class Point {
   x: number;
@@ -6,6 +6,9 @@ class Point {
   constructor(x: number, y: number) {
     this.x = x;
     this.y = y;
+  }
+  static load(info: InfoPoint) {
+    return new Point(info.x, info.y);
   }
 
   equals(point: Point | TPoint) {
