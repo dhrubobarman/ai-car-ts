@@ -1,10 +1,10 @@
-import { Crossing } from "./markings/Crossing";
-import { Light } from "./markings/Light";
-import { Parking } from "./markings/Parking";
-import { Start } from "./markings/Start";
-import { Stop } from "./markings/Stop";
-import { Target } from "./markings/Target";
-import { Yield } from "./markings/Yield";
+import { Crossing } from "./world/js/markings/Crossing";
+import { Light } from "./world/js/markings/Light";
+import { Parking } from "./world/js/markings/Parking";
+import { Start } from "./world/js/markings/Start";
+import { Stop } from "./world/js/markings/Stop";
+import { Target } from "./world/js/markings/Target";
+import { Yield } from "./world/js/markings/Yield";
 
 export interface CTXAttributes extends CanvasRenderingContext2D {
   dash: number[];
@@ -132,3 +132,5 @@ export type InfoMarking = {
 };
 export type InfoImage = {};
 // --------------TYPE FOR LOADING LOCALSTORAGE DATA--------------
+
+export type ControlType = "KEYS" | "DUMMY" | "AI";

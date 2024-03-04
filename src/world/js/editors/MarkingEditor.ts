@@ -1,9 +1,9 @@
-import Viewport from "@/Viewport";
-import World from "@/World";
-import { Stop } from "@/markings/Stop";
+import Viewport from "@/world/js/Viewport";
+import World from "@/world/js/World";
+import { Stop } from "@/world/js/markings/Stop";
 import { getNearestSegment } from "@/math/utils";
-import Point from "@/primitives/point";
-import Segment from "@/primitives/segment";
+import Point from "@/world/js/primitives/point";
+import Segment from "@/world/js/primitives/segment";
 import { Markings } from "@/types";
 
 export class MarkingEditor {

@@ -1,7 +1,7 @@
-import Viewport from "@/Viewport";
-import World from "@/World";
-import { Light } from "@/markings/Light";
-import Point from "@/primitives/point";
+import Viewport from "@/world/js/Viewport";
+import World from "@/world/js/World";
+import { Light } from "@/world/js/markings/Light";
+import Point from "@/world/js/primitives/point";
 import { MarkingEditor } from "./MarkingEditor";
 
 export class LightEditor extends MarkingEditor {

@@ -1,5 +1,5 @@
 import { angle } from "@/math/utils";
-import Point from "@/primitives/point";
+import Point from "@/world/js/primitives/point";
 import { Marking } from "./Marking";
 
 export class Start extends Marking {

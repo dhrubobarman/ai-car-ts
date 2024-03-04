@@ -1,6 +1,6 @@
 import { average, getFake3dPoint } from "@/math/utils";
-import Polygon from "@/primitives/Polygon";
-import Point from "@/primitives/point";
+import Polygon from "@/world/js/primitives/Polygon";
+import Point from "@/world/js/primitives/point";
 import { InfoBuilding } from "@/types";
 
 class Building {

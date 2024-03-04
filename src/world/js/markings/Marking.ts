@@ -1,8 +1,8 @@
 import { angle, translate } from "@/math/utils";
-import Envelope from "@/primitives/Envelope";
-import Polygon from "@/primitives/Polygon";
-import Point from "@/primitives/point";
-import Segment from "@/primitives/segment";
+import Envelope from "@/world/js/primitives/Envelope";
+import Polygon from "@/world/js/primitives/Polygon";
+import Point from "@/world/js/primitives/point";
+import Segment from "@/world/js/primitives/segment";
 import { MarkingsMap } from "@/types";
 
 export class Marking {

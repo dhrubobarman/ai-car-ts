@@ -1,5 +1,5 @@
-import Point from "@/primitives/point";
-import Segment from "@/primitives/segment";
+import Point from "@/world/js/primitives/point";
+import Segment from "@/world/js/primitives/segment";
 import type { GraphInfo } from "@/types";
 
 class Graph {

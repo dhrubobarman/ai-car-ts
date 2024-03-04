@@ -1,6 +1,6 @@
 import { add, perpendicular, scale } from "@/math/utils";
-import Point from "@/primitives/point";
-import Segment from "@/primitives/segment";
+import Point from "@/world/js/primitives/point";
+import Segment from "@/world/js/primitives/segment";
 import { Marking } from "./Marking";
 
 export class Crossing extends Marking {

@@ -1,13 +1,13 @@
-import World from "@/World";
-import { Crossing } from "@/markings/Crossing";
-import { Light } from "@/markings/Light";
-import { Marking } from "@/markings/Marking";
-import { Parking } from "@/markings/Parking";
-import { Start } from "@/markings/Start";
-import { Stop } from "@/markings/Stop";
-import { Target } from "@/markings/Target";
-import { Yield } from "@/markings/Yield";
-import Point from "@/primitives/point";
+import World from "@/world/js/World";
+import { Crossing } from "@/world/js/markings/Crossing";
+import { Light } from "@/world/js/markings/Light";
+import { Marking } from "@/world/js/markings/Marking";
+import { Parking } from "@/world/js/markings/Parking";
+import { Start } from "@/world/js/markings/Start";
+import { Stop } from "@/world/js/markings/Stop";
+import { Target } from "@/world/js/markings/Target";
+import { Yield } from "@/world/js/markings/Yield";
+import Point from "@/world/js/primitives/point";
 import { InfoMarking } from "@/types";
 import { createElement } from "./createElement";
 

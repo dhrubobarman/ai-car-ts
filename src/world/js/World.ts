@@ -1,14 +1,15 @@
-import Tree from "@/items/Tree";
+import Tree from "@/world/js/items/Tree";
 import Building from "./items/Building";
 import { Light } from "./markings/Light";
-import Graph from "./math/graph";
-import { add, distance, getNearestPoint, lerp, scale } from "./math/utils";
+import Graph from "../../math/graph";
+import { add, distance, getNearestPoint, lerp, scale } from "../../math/utils";
 import Envelope from "./primitives/Envelope";
 import Polygon from "./primitives/Polygon";
 import Point from "./primitives/point";
 import Segment from "./primitives/segment";
-import { InfoWorld, Markings } from "./types";
-import { loadMarkings } from "./utils";
+import { InfoWorld, Markings } from "../../types";
+import { loadMarkings } from "../../utils";
+import { Car } from "@/Car";
 
 export type ControlCenter = Point & {
   lights?: Light[];
@@ -32,6 +33,8 @@ class World {
   frameCount: number;
   zoom: number;
   offset: Point | null;
+  cars: Car[];
+  bestCar: Car | null;
   constructor(
     graph: Graph,
     rodeWidth = 100,
@@ -61,6 +64,8 @@ class World {
     this.generate();
     this.zoom = zoom;
     this.offset = offset;
+    this.cars = [];
+    this.bestCar = null;
   }
   static load(info: InfoWorld) {
     const world = new World(new Graph());
@@ -287,13 +292,19 @@ class World {
     }
     this.frameCount++;
   }
-  draw(ctx: CanvasRenderingContext2D, viewpoint: Point) {
+  draw(
+    ctx: CanvasRenderingContext2D,
+    viewpoint: Point,
+    showStartMarkings = true
+  ) {
     this.updateLights();
     for (const env of this.envelopes) {
       env.draw(ctx, { fillStyle: "#BBB", strokeStyle: "#BBB", lineWidth: 15 });
     }
-    for (const markings of this.markings) {
-      markings.draw(ctx);
+    for (const marking of this.markings) {
+      if (showStartMarkings || marking.type === "Start") {
+        marking.draw(ctx);
+      }
     }
     for (const seg of this.graph.segments) {
       seg.draw(ctx, { strokeStyle: "white", width: 4, dash: [10, 10] });
@@ -301,6 +312,15 @@ class World {
     for (const seg of this.roadBorder) {
       seg.draw(ctx, { strokeStyle: "white", width: 4 });
     }
+    // draw cars
+    ctx.globalAlpha = 0.2;
+    for (const car of this.cars) {
+      car.draw(ctx);
+    }
+    ctx.globalAlpha = 1;
+    this.bestCar?.draw(ctx, true);
+    // draw cars
+
     const items = [...this.buildings, ...this.trees];
     items.sort(
       (a, b) =>

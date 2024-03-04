@@ -1,8 +1,8 @@
 import Graph from "@/math/graph";
-import { getNearestPoint } from "../math/utils";
+import { getNearestPoint } from "../../../math/utils";
 import Point from "../primitives/point";
 import Segment from "../primitives/segment";
-import Viewport from "@/Viewport";
+import Viewport from "@/world/js/Viewport";
 
 export class GraphEditor {
   ctx: CanvasRenderingContext2D;

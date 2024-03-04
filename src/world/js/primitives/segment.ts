@@ -1,5 +1,5 @@
 import type { InfoSegment, SegmentDrawOptions } from "@/types";
-import Point from "@/primitives/point";
+import Point from "@/world/js/primitives/point";
 import {
   add,
   distance,

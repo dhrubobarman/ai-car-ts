@@ -1,9 +1,9 @@
 import { angle } from "@/math/utils";
-import Point from "@/primitives/point";
-import Segment from "@/primitives/segment";
+import Point from "@/world/js/primitives/point";
+import Segment from "@/world/js/primitives/segment";
 import { Marking } from "./Marking";
 
-export class Stop extends Marking {
+export class Yield extends Marking {
   border: Segment;
   constructor(
     center: Point,
@@ -11,7 +11,7 @@ export class Stop extends Marking {
     width: number,
     height: number
   ) {
-    super(center, directionVector, width, height, "Stop");
+    super(center, directionVector, width, height, "Yield");
     this.border = this.poly.segments[2];
   }
 
@@ -27,7 +27,7 @@ export class Stop extends Marking {
     ctx.textBaseline = "middle";
     ctx.fillStyle = "white";
     ctx.font = `bold ${this.height * 0.3}px Arial`;
-    ctx.fillText("STOP", 0, 1);
+    ctx.fillText("YIELD", 0, 1);
     ctx.restore();
   }
 }

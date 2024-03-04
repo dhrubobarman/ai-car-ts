@@ -1,6 +1,6 @@
 import { getFake3dPoint, lerp, lerp2D, translate } from "@/math/utils";
-import Polygon from "@/primitives/Polygon";
-import Point from "@/primitives/point";
+import Polygon from "@/world/js/primitives/Polygon";
+import Point from "@/world/js/primitives/point";
 
 class Tree {
   center: Point;

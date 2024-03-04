@@ -1,4 +1,4 @@
-import Point from "@/primitives/point";
+import Point from "@/world/js/primitives/point";
 import { Marking } from "./Marking";
 
 export class Target extends Marking {

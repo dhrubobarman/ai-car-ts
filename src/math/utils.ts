@@ -1,5 +1,6 @@
-import Point from "@/primitives/point";
-import Segment from "@/primitives/segment";
+import Point from "@/world/js/primitives/point";
+import Segment from "@/world/js/primitives/segment";
+import { TPoint } from "@/types";
 
 export function getNearestPoint(
   loc: Point,
@@ -18,6 +19,22 @@ export function getNearestPoint(
   return nearest;
 }
 export function getNearestSegment(
+  loc: Point,
+  segments: Segment[],
+  threshold = Number.MAX_SAFE_INTEGER
+) {
+  let minDist = Number.MAX_SAFE_INTEGER;
+  let nearest = null;
+  for (const seg of segments) {
+    const dist = seg.distanceToPoint(loc);
+    if (dist < minDist && dist < threshold) {
+      minDist = dist;
+      nearest = seg;
+    }
+  }
+  return nearest;
+}
+export function getNearesTPoint(
   loc: Point,
   segments: Segment[],
   threshold = Number.MAX_SAFE_INTEGER
@@ -72,7 +89,12 @@ export function angle(p: Point) {
   return Math.atan2(p.y, p.x);
 }
 
-export function getIntersection(A: Point, B: Point, C: Point, D: Point) {
+export function getIntersection(
+  A: Point | TPoint,
+  B: Point | TPoint,
+  C: Point | TPoint,
+  D: Point | TPoint
+) {
   const tTop = (D.x - C.x) * (A.y - C.y) - (D.y - C.y) * (A.x - C.x);
   const uTop = (C.y - A.y) * (A.x - B.x) - (C.x - A.x) * (A.y - B.y);
   const bottom = (D.y - C.y) * (B.x - A.x) - (D.x - C.x) * (B.y - A.y);
@@ -102,6 +124,9 @@ export function lerp2D(a: Point, b: Point, t: number) {
 // if you're following along, this comes in a few minutes ;-)
 export function getRandomColor() {
   const hue = 290 + Math.random() * 260;
+  const s = getRndInteger(30, 100);
+  const l = getRndInteger(25, 100);
+  return `hsl(${hue},${s}%,${l}%)`;
   return "hsl(" + hue + ", 100%, 60%)";
 }
 
@@ -110,4 +135,42 @@ export function getFake3dPoint(point: Point, viewpoint: Point, height: number) {
   const dist = distance(point, viewpoint);
   const scaler = Math.atan(dist / 300) / (Math.PI / 2);
   return add(point, scale(dir, height * scaler));
+}
+
+// new functions ---------------------------
+
+export function polygonIntersect(
+  poly1: TPoint[] | Point[],
+  poly2: TPoint[] | Point[]
+) {
+  for (let i = 0; i < poly1.length; i++) {
+    for (let j = 0; j < poly2.length; j++) {
+      const touch = getIntersection(
+        poly1[i],
+        poly1[(i + 1) % poly1.length],
+        poly2[j],
+        poly2[(j + 1) % poly2.length]
+      );
+      if (touch) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+export function numberToBool(num: number) {
+  return num === 1;
+}
+export function getRGBA(values: number) {
+  const alpha = Math.abs(values);
+  const r = values < 0 ? 0 : 255;
+  const g = r;
+  const b = values > 0 ? 0 : 255;
+
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+export function getRndInteger(min: number, max: number) {
+  return Math.floor(Math.random() * (max - min)) + min;
 }
