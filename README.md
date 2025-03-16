@@ -15,6 +15,6 @@ This project is a demonstration of how AI algorithms can be used to train virtua
 
 ## 🌟 Technologies Used
 
-- **Vanilla JavaScript**: For creating the simulation logic and rendering the world.
+- **Typescript**: For creating the simulation logic and rendering the world.
 - **AI Algorithms**: To implement learning and decision-making for the cars.
 - **Browser-Based**: No additional dependencies—runs directly in modern web browsers.
